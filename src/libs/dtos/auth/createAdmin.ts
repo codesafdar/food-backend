@@ -2,12 +2,15 @@ import { IsNotEmpty } from "class-validator";
 
 export class CreateAdminDto {
   @IsNotEmpty()
-  name: string
+  fName: string
+
+  @IsNotEmpty()
+  lName: string
 
   @IsNotEmpty()
   email: string
 
   @IsNotEmpty()
   password: string
-  
+
 }

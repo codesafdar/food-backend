@@ -1,21 +1,22 @@
-import { Controller, Post, Get, Body } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Request, } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateAdminDto, LoginDto } from "@/src/libs";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { RefreshJwtGuard } from "./guards/refresh-jwt-auth.guard";
 
-
-@Controller('auth')
+@Controller('admin')
 export class AuthController {
   constructor(private authService: AuthService) { }
 
   // admin login
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Body() body: LoginDto) {
-    return this.authService.login(body)
+  login(@Request() req: any) {
+    return this.authService.login(req.user);
   }
 
-// create new admin
-  @Post('create-admin')
-  createAdmin(@Body() body: CreateAdminDto) {
-    return this.authService.createAdmin(body)
+  @UseGuards(RefreshJwtGuard)
+  @Post('refresh')
+  getRefreshToken(@Request() req: any) {
+    return this.authService.refreshToken(req.user)
   }
 }

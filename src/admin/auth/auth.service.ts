@@ -1,66 +1,66 @@
-import { CreateAdminDto, CustomError, LoginDto } from '@/src/libs';
+import { CustomError } from '@/src/libs';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
+import { CreateToken } from '@/src/libs/services/createJwtToken';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel('Admin_Auth') private adminAuthModel, private jwtService: JwtService) { }
+  constructor(@InjectModel('Create_Admin') private adminAuthModel: any,
+    private jwtService: JwtService, private createToken: CreateToken) { }
 
-  async login(data: LoginDto) {
-    const { email, password } = data
+  async validateUser(email: string, password: string) {
+    const userData = await this.adminAuthModel.findOne({ email })
 
-    if (!email || !password) {
+    // if user not exist
+    if (!userData) {
+      return CustomError('User does not exist', HttpStatus.NOT_FOUND)
+    }
+
+    // verify password
+    const validatedPass = await bcrypt.compare(password, userData?.password)
+    if (!validatedPass) {
       return CustomError('Please enter missing credentials', HttpStatus.BAD_REQUEST)
     }
 
-    const getAdminData = await this.adminAuthModel.findOne({ email })
+    if (userData && validatedPass) {
+      const { password, ...user } = userData.toObject()
+      return user
+    }
+    return null
+  }
 
-    if (!getAdminData) {
-      return CustomError('User with this email does not exist', HttpStatus.NOT_FOUND)
+
+  async login(user: any) {
+    const { email, _id } = user;
+
+    const payload = { email, userId: _id.toString() }
+
+    console.log("🚀 ~ file: auth.service.ts:40 ~ AuthService ~ login ~ payload:", payload)
+    // sign access and refresh tokens
+    const token = await this.createToken.createJwtToken(payload, '60s')
+    const refreshToken = await this.createToken.createJwtToken(payload, '70s')
+
+    if (email === 'safdarhussain2230@gmail.com') {
+      user.role = 'superAdmin'
     }
 
-    const { _id, name } = getAdminData?.password
-    const getPassword = getAdminData.password
-
-    const isVerifiedPassword = await bcrypt.compare(password, getPassword)
-
-    if (isVerifiedPassword) {
-      const payload = { name, adminId: _id }
-      const token = await this.jwtService.signAsync(payload)
-      return token
+    return {
+      access_token: token,
+      ...user,
+      refresh_token: refreshToken
     }
   }
 
-  
-  // create admin
-  async createAdmin(data: CreateAdminDto) {
-    try {
-      const { email, password } = data
+  // refresh token
+  async refreshToken(user: any) {
+    const newAccessToken = await this.createToken.createJwtToken(user, '60s')
+    const refreshToken = await this.createToken.createJwtToken(user, '70s')
 
-      const userExists = await this.adminAuthModel.findOne({ email })
-      console.log("🚀 ~ file: auth.service.ts:32 ~ AuthService ~ createAdmin ~ userExists:", userExists)
-
-      if (userExists) {
-        return CustomError('User with this email already exists', HttpStatus.BAD_REQUEST)
-      }
-
-      // hash the password
-      const getSalt = await bcrypt.genSalt()
-      const hashedPass = await bcrypt.hash(password, getSalt)
-      console.log("🚀 ~ file: auth.service.ts:32 ~ AuthService ~ createAdmin ~ hashedPass:", hashedPass)
-      data = { ...data, password: hashedPass }
-      const newAdmin = await new this.adminAuthModel(data)
-      const res = newAdmin.save()
-
-      if (!res) {
-        return CustomError('Internal server error', HttpStatus.SERVICE_UNAVAILABLE)
-      }
-      return res
-    }
-    catch (err) {
-      return CustomError(err.message, err.status)
+    return {
+      access_token: newAccessToken,
+      refresh_token: refreshToken
     }
   }
 }

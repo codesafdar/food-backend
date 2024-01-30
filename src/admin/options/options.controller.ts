@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Put, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { OptionsService } from './options.service';
 import { OptionsDto } from '@libs/dtos/options';
-// import { ICategory } from '@libs/types/category';
+import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('options')
+@UseGuards(JwtGuard)
 export class OptionsController {
   constructor(private optionsService: OptionsService) { }
 

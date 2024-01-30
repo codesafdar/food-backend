@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, Param, Delete, HttpException, UseInterceptors, UploadedFile } from "@nestjs/common";
+import { Body, Controller, Get, Put, Param, Delete, HttpException, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { Post } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { ProductDto } from "@libs/dtos/product";
@@ -6,9 +6,13 @@ import { Product } from "./product.schema";
 import { ModifyResult } from "mongoose";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CloudinaryService } from "@/src/cloudinary/cloudinary.service";
+import { JwtGuard } from "../auth/guards/jwt-auth.guard";
+// import { AuthGuard } from "../auth/auth.guard";
+
 
 
 @Controller('product')
+@UseGuards(JwtGuard)
 export class ProductController {
   constructor(private productService: ProductService, private cloudinaryService: CloudinaryService) { }
 
