@@ -18,6 +18,9 @@ export class Create_Admin {
   email: string
 
   @Prop()
+  role: string
+
+  @Prop()
   @IsNotEmpty()
   password: string
 }

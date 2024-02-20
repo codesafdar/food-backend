@@ -13,6 +13,10 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     const userData = await this.adminAuthModel.findOne({ email })
 
+    if (!['admin','super_admin'].includes(userData?.role)) {
+      return CustomError('Please access with admin credentials', HttpStatus.UNAUTHORIZED)
+    }
+
     // if user not exist
     if (!userData) {
       return CustomError('User does not exist', HttpStatus.NOT_FOUND)
@@ -21,7 +25,7 @@ export class AuthService {
     // verify password
     const validatedPass = await bcrypt.compare(password, userData?.password)
     if (!validatedPass) {
-      return CustomError('Please enter missing credentials', HttpStatus.BAD_REQUEST)
+      return CustomError('Please enter correct credentials', HttpStatus.BAD_REQUEST)
     }
 
     if (userData && validatedPass) {
@@ -37,14 +41,9 @@ export class AuthService {
 
     const payload = { email, userId: _id.toString() }
 
-    console.log("🚀 ~ file: auth.service.ts:40 ~ AuthService ~ login ~ payload:", payload)
     // sign access and refresh tokens
-    const token = await this.createToken.createJwtToken(payload, '60s')
-    const refreshToken = await this.createToken.createJwtToken(payload, '70s')
-
-    if (email === 'safdarhussain2230@gmail.com') {
-      user.role = 'superAdmin'
-    }
+    const token = await this.createToken.createJwtToken(payload, '600s')
+    const refreshToken = await this.createToken.createJwtToken(payload, '7d')
 
     return {
       access_token: token,
@@ -55,8 +54,8 @@ export class AuthService {
 
   // refresh token
   async refreshToken(user: any) {
-    const newAccessToken = await this.createToken.createJwtToken(user, '60s')
-    const refreshToken = await this.createToken.createJwtToken(user, '70s')
+    const newAccessToken = await this.createToken.createJwtToken(user, '600s')
+    const refreshToken = await this.createToken.createJwtToken(user, '7d')
 
     return {
       access_token: newAccessToken,

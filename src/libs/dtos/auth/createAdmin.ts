@@ -13,4 +13,6 @@ export class CreateAdminDto {
   @IsNotEmpty()
   password: string
 
+  @IsNotEmpty()
+  role: string
 }

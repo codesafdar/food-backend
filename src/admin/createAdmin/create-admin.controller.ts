@@ -1,4 +1,4 @@
-import { Body, Controller, UseGuards, Req, Post } from "@nestjs/common";
+import { Body, Controller, UseGuards, Req, Post, Get, Delete, Param, Put } from "@nestjs/common";
 import { CreateAdminService } from "./create-admin.service";
 import { CreateAdminDto } from "@/src/libs";
 import { JwtGuard } from "../auth/guards/jwt-auth.guard";
@@ -8,10 +8,33 @@ import { JwtGuard } from "../auth/guards/jwt-auth.guard";
 @Controller('admin')
 export class createNewAdmin {
   constructor(private createAdminService: CreateAdminService) { }
-  
+
+  // create admin
   @UseGuards(JwtGuard)
   @Post('create-admin')
-  createAdmin(@Body() data: CreateAdminDto, @Req() req: any) {
-    return this.createAdminService.create(data, req)
+  createAdmin(@Body() data: CreateAdminDto) {
+    return this.createAdminService.create(data)
   }
+
+  // get all users 
+  @UseGuards(JwtGuard)
+  @Get('get-users')
+  getUsers() {
+    return this.createAdminService.getAllUsers()
+  }
+
+  // delete admin
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  deleteUser(@Param('id') id: string) {
+    return this.createAdminService.deleteUser(id)
+  }
+
+  // update admin role
+  @UseGuards(JwtGuard)
+  @Put(':id')
+  updateRole(@Param('id') id: string, @Body() data: any) {
+    return this.createAdminService.updateRole(id, data)
+  }
+
 }

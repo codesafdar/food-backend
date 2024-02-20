@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, } from "@nestjs/common";
+import { Controller, Post, UseGuards, Request } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshJwtGuard } from "./guards/refresh-jwt-auth.guard";
@@ -19,4 +19,5 @@ export class AuthController {
   getRefreshToken(@Request() req: any) {
     return this.authService.refreshToken(req.user)
   }
+
 }
