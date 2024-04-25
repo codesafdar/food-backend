@@ -7,6 +7,8 @@ import { ProductModule } from './admin/product/product.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ConfigModule } from '@nestjs/config'
 import { CreateAdminModule } from './admin/createAdmin/create-admin.module';
+import { ClientModule } from './client/addToCart/client.module';
+import { CartModule } from './client/cart/cart.module';
 
 
 @Module({
@@ -18,6 +20,8 @@ import { CreateAdminModule } from './admin/createAdmin/create-admin.module';
       isGlobal: true
     }),
     CreateAdminModule,
+    ClientModule,
+    CartModule,
   ],
   providers: [],
 })
