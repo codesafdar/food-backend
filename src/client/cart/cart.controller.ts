@@ -17,7 +17,8 @@ export class CartController {
 
   @Get()
   async findAll(): Promise<Product[] | HttpException> {
-    return await this.productService.getAll()
+    console.log('first route is rendered')
+    return await this.productService.getAll();
   }
 
   // 245584959105-133ndopvjnm0gvuqnn34k8b6e5s7443u.apps.googleusercontent.com

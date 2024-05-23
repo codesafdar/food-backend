@@ -1,5 +1,5 @@
-import { CustomError } from '@/src/libs';
-import { HttpStatus, Injectable } from '@nestjs/common';
+// import { CustomError } from '@/src/libs';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
@@ -14,18 +14,18 @@ export class AuthService {
     const userData = await this.adminAuthModel.findOne({ email })
 
     if (!['admin','super_admin'].includes(userData?.role)) {
-      return CustomError('Please access with admin credentials', HttpStatus.UNAUTHORIZED)
+      return null
     }
 
     // if user not exist
     if (!userData) {
-      return CustomError('User does not exist', HttpStatus.NOT_FOUND)
+      return null
     }
 
     // verify password
     const validatedPass = await bcrypt.compare(password, userData?.password)
     if (!validatedPass) {
-      return CustomError('Please enter correct credentials', HttpStatus.BAD_REQUEST)
+      return null
     }
 
     if (userData && validatedPass) {
