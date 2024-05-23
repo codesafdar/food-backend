@@ -1,35 +1,35 @@
-import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 
 interface IMultiple {
-  itemName: string
-  itemPrice: number
-  option: string
+  itemName: string;
+  itemPrice: number;
+  option: string;
 }
 interface IVariation {
-  itemName: string
-  itemPrice: number
+  itemName: string;
+  itemPrice: number;
 }
 
 @Schema()
 export class Cart {
   @Prop()
-  title: string
+  title: string;
 
   @Prop()
-  description: string
+  description: string;
 
   @Prop()
-  noOfItems: number
+  noOfItems: number;
 
   @Prop()
-  total: number
+  total: number;
 
   @Prop({ type: MongooseSchema.Types.Array })
-  multiple: IMultiple
+  multiple: IMultiple;
 
   @Prop({ type: { itemName: '', itemPrice: 0, _id: false } })
-  variation: IVariation
+  variation: IVariation;
 }
 
-export const CartSchema = SchemaFactory.createForClass(Cart)
+export const CartSchema = SchemaFactory.createForClass(Cart);

@@ -42,8 +42,8 @@ export class AuthService {
     const payload = { email, userId: _id.toString() }
 
     // sign access and refresh tokens
-    const token = await this.createToken.createJwtToken(payload, '600s')
-    const refreshToken = await this.createToken.createJwtToken(payload, '7d')
+    const token = await this.createToken.createJwtToken(payload, '600s');
+    const refreshToken = await this.createToken.createJwtToken(payload, '7d');
 
     return {
       access_token: token,
@@ -54,12 +54,12 @@ export class AuthService {
 
   // refresh token
   async refreshToken(user: any) {
-    const newAccessToken = await this.createToken.createJwtToken(user, '600s')
-    const refreshToken = await this.createToken.createJwtToken(user, '7d')
+    const newAccessToken = await this.createToken.createJwtToken(user, '600s');
+    const refreshToken = await this.createToken.createJwtToken(user, '7d');
 
     return {
       access_token: newAccessToken,
-      refresh_token: refreshToken
-    }
+      refresh_token: refreshToken,
+    };
   }
 }

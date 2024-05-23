@@ -9,4 +9,4 @@ import { CartSchema } from './client.schema';
   controllers: [ClientController],
   providers: [ClientService],
 })
-export class ClientModule { }
+export class ClientModule {}

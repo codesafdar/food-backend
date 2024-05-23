@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OptionsModule } from './admin/options/options.module';
 import { ProductModule } from './admin/product/product.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 import { CreateAdminModule } from './admin/createAdmin/create-admin.module';
 import { ClientModule } from './client/addToCart/client.module';
 import { CartModule } from './client/cart/cart.module';
@@ -25,4 +25,4 @@ import { CartModule } from './client/cart/cart.module';
   ],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
