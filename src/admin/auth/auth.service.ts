@@ -3,7 +3,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
-import { CreateToken } from '@/src/libs/services/createJwtToken';
+// import { CreateToken } from '@/src/libs/services/createJwtToken';
+import {CreateToken} from '../../libs/services/createJwtToken'
 
 @Injectable()
 export class AuthService {
@@ -42,7 +43,7 @@ export class AuthService {
     const payload = { email, userId: _id.toString() }
 
     // sign access and refresh tokens
-    const token = await this.createToken.createJwtToken(payload, '600s');
+    const token = await this.createToken.createJwtToken(payload, '600s')
     const refreshToken = await this.createToken.createJwtToken(payload, '7d')
 
     return {
