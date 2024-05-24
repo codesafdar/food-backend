@@ -91,6 +91,7 @@
     "testEnvironment": "node"
   },
   "_moduleAliases": {
-    "@": "src"
+    "@": ".",
+    "@libs": "src/libs"
   }
 }
