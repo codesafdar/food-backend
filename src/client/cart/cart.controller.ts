@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, Query, BadRequestException } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
@@ -17,11 +17,8 @@ export class CartController {
 
   @Get()
   async findAll(): Promise<Product[] | HttpException> {
-    console.log('first route is rendered')
     return await this.productService.getAll();
   }
-
-  // 245584959105-133ndopvjnm0gvuqnn34k8b6e5s7443u.apps.googleusercontent.com
 
   @Get('category')
   async findCategories() {
@@ -36,5 +33,13 @@ export class CartController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.cartService.remove(+id);
+  }
+
+  // filter by title
+  @Get('filter')
+  async filterProducts(@Query() query) {
+    if (!query) throw new BadRequestException('Query parameter "search" is required')
+    const res = await this.productService.findByFilter(query)
+    return res
   }
 }

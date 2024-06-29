@@ -7,7 +7,7 @@ import { JwtGuard } from "../auth/guards/jwt-auth.guard";
 
 @Controller('admin')
 export class createNewAdmin {
-  constructor(private createAdminService: CreateAdminService) { }
+  constructor(private createAdminService: CreateAdminService) {}
 
   // create admin
   @UseGuards(JwtGuard)

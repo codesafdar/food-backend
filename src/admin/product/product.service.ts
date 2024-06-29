@@ -1,4 +1,4 @@
-import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './product.schema';
 import { Model, ModifyResult } from 'mongoose';
@@ -15,7 +15,7 @@ export class ProductService {
       let formatOption = body.optionsList
       formatOption = JSON.parse(formatOption as any)
       formatOption = JSON.parse(JSON.stringify(formatOption));
-       
+
       body.optionsList = formatOption
       const res = await new this.productModel(body)
       const data = res.save()
@@ -51,7 +51,7 @@ export class ProductService {
       let formatOption = data.optionsList
       formatOption = JSON.parse(formatOption as any)
       formatOption = JSON.parse(JSON.stringify(formatOption));
-       
+
       data.optionsList = formatOption
       const updatedData: Product = await this.productModel.findByIdAndUpdate(id, data, { new: true })
       if (!updatedData) {
@@ -77,4 +77,26 @@ export class ProductService {
       return CustomError(err.message, err.response)
     }
   }
+
+  // filter products
+  async findByFilter(query): Promise<Product | HttpException | any> {
+    try {
+      const { search, page_no, per_page } = query
+
+      // calculation for skipping first no of items
+      const offset = (page_no - 1) * per_page
+
+      const regex = new RegExp(search, 'i')
+      let getData = []
+      if (page_no) getData = await this.productModel.find({ title: { $regex: regex } }).skip(offset).limit(per_page)
+      else getData = await this.productModel.find({ title: { $regex: regex } })
+      console.log("🚀 ~ ProductService ~ findByFilter ~ getData:", getData.length)
+      return getData
+    }
+    catch (err) {
+      return CustomError(err.message, err.response)
+    }
+  }
+
 }
+
