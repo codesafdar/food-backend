@@ -17,8 +17,8 @@ export class ProductService {
       formatOption = JSON.parse(JSON.stringify(formatOption));
 
       body.optionsList = formatOption
-      const res = await new this.productModel(body)
-      const data = res.save()
+      const res = new this.productModel(body)
+      const data = await res.save()
       if (!data) {
         return CustomError('Internal server error', HttpStatus.BAD_REQUEST)
       }
@@ -34,9 +34,8 @@ export class ProductService {
     try {
 
       const getData: Product[] = await this.productModel.find()
-      if (!getData) {
-        return CustomError('Data not found', HttpStatus.NOT_FOUND)
-      }
+      if (!getData)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return getData
     }
     catch (err) {
@@ -54,9 +53,8 @@ export class ProductService {
 
       data.optionsList = formatOption
       const updatedData: Product = await this.productModel.findByIdAndUpdate(id, data, { new: true })
-      if (!updatedData) {
-        return CustomError('Data not found', HttpStatus.NOT_FOUND)
-      }
+      if (!updatedData)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return updatedData
     }
     catch (err) {
@@ -68,9 +66,8 @@ export class ProductService {
   async delete(id: string): Promise<ModifyResult<Product> | HttpException> {
     try {
       const result: ModifyResult<Product> = await this.productModel.findByIdAndDelete(id)
-      if (!result) {
-        return CustomError('Data does not exist', HttpStatus.NOT_FOUND)
-      }
+      if (!result)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return result
     }
     catch (err) {

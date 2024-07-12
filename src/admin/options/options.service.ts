@@ -13,9 +13,8 @@ export class OptionsService {
     try {
       const res = await new this.optionsModel(body)
       const data = res.save()
-      if (!data) {
-        return CustomError('Something went wrong', HttpStatus.BAD_REQUEST)
-      }
+      if (!data)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return data
     }
     catch (err) {
@@ -26,9 +25,8 @@ export class OptionsService {
   async getAll() {
     try {
       const res = await this.optionsModel.find()
-      if (!res) {
-        return CustomError('Data not found', HttpStatus.NOT_FOUND)
-      }
+      if (!res)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return res
     }
     catch (err) {
@@ -37,25 +35,22 @@ export class OptionsService {
   }
 
   async update(id: string, data: OptionsDto) {
-    try{
+    try {
       const res = await this.optionsModel.findByIdAndUpdate(id, data, { new: true })
-      if (!res) {
-        throw new NotFoundException('Data does not exist')
-        return CustomError('Data does not exist',HttpStatus.NOT_FOUND)
-      }
+      if (!res)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return res
     }
-   catch(err){
-       return CustomError(err.message, err.status)
-   }
+    catch (err) {
+      return CustomError(err.message, err.status)
+    }
   }
 
   async delete(id: string) {
     try {
       const deletedItem = await this.optionsModel.findByIdAndDelete(id)
-      if (!deletedItem) {
-        return CustomError('Item does not exist', HttpStatus.NOT_FOUND)
-      }
+      if (!deletedItem)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return deletedItem
     }
     catch (err) {

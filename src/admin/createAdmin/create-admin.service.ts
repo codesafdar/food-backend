@@ -22,10 +22,8 @@ export class CreateAdminService {
       const { email, password, role } = data
 
       const userExists = await this.createAdminModel.findOne({ email })
-      if (userExists) {
-        return CustomError('User with this email already exists', HttpStatus.BAD_REQUEST)
-      }
-
+      if (userExists) 
+        throw ({ message: 'User with this email already exists', status: HttpStatus.BAD_REQUEST })
       // if (role !== 'super_admin') {
       //   return CustomError('You are not authorized to access', HttpStatus.FORBIDDEN)
       // }
@@ -34,7 +32,7 @@ export class CreateAdminService {
       const hashedPass = await this.hashPass(password)
 
       data = { ...data, password: hashedPass }
-      const newAdmin = await new this.createAdminModel(data)
+      const newAdmin = new this.createAdminModel(data)
       const res = await newAdmin.save()
 
       if (!res) {

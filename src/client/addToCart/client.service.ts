@@ -14,7 +14,7 @@ export class ClientService {
   async create(createClientDto: CreateClientDto) {
     try {
       const description = createClientDto?.description?.replace(/[^a-zA-Z ]/g, "")
-      const res = await new this.cartModel({ ...createClientDto, description })
+      const res = new this.cartModel({ ...createClientDto, description })
       const data = await res.save()
       if (!data) {
         return CustomError('Something went wrong', HttpStatus.BAD_REQUEST)
@@ -29,9 +29,8 @@ export class ClientService {
   async findAll() {
     try {
       const data = await this.cartModel.find()
-      if (!data) {
-        return CustomError('Something went wrong', HttpStatus.BAD_REQUEST)
-      }
+      if (!data)
+        throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
       return data
     }
     catch (err) {
