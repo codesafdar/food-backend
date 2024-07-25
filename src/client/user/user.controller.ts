@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/com
 import { RequestOtpDto } from './dtos/reqOtp.dto';
 import { RegisterUserDto } from './dtos/register.dto';
 import { UserService } from './user.service';
-import { VerifyDto } from './dtos/verifyOTP.dto';
+import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
 
 @Controller('user')
 export class UserController {
@@ -23,8 +23,13 @@ export class UserController {
   @HttpCode(200)
   @Get('verify-otp')
   async verifyOTP(@Query() code: VerifyDto) {
-    console.log("🚀 ~ UserController ~ verifyOTP ~ code:", code)
     const { otp } = code
     return this.userService.verifyUserOTP(otp)
+  }
+
+  @HttpCode(200)
+  @Get('detail')
+  async userDetail(@Query() info: UserDto) {
+    return this.userService.getUserDetail(info)
   }
 }

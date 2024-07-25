@@ -8,7 +8,7 @@ import { RequestOtpDto } from './dtos/reqOtp.dto';
 // import { generateOTP } from '@/utils/codeGenerator';
 // import { sendMessage } from '@/src/libs/sendMessage';
 import { getExpiry, isTokenExpired } from '@/utils/dateTimeUtility';
-import { VerifyDto } from './dtos/verifyOTP.dto';
+import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
 
 
 @Injectable()
@@ -43,6 +43,11 @@ export class UserService {
       if (!isUserExist)
         return ({ userExists: 'no', message: 'Please register first to login', status: HttpStatus.OK })
 
+      const userPreviousOtpData = await this.otpModel.findOne({ userId: isUserExist._id })
+      if (userPreviousOtpData) {
+        await this.otpModel.deleteOne({ _id: userPreviousOtpData._id })
+      }
+
       // will uncomment on purchasing sms service
       // const otp = generateOTP(6)
       // const formattedNumber: string = ('92' + mobileNumber).toString().replace('-', '')
@@ -69,17 +74,32 @@ export class UserService {
         throw ({ message: 'Invalid code', status: HttpStatus.BAD_REQUEST })
 
       const isCodeExpired = isTokenExpired(isValidOTP.expiresAt)
-      console.log("🚀 ~ UserService ~ verifyUserOTP ~ isCodeExpired:", isCodeExpired)
       if (isCodeExpired)
         throw ({ message: 'Your OTP is expired, please try again', status: HttpStatus.BAD_REQUEST })
 
       // delete token after verification
-      const deleted = await this.otpModel.deleteOne({ _id: isValidOTP._id })
-      console.log("🚀 ~ UserService ~ verifyUserOTP ~ deleted:", deleted)
+      await this.otpModel.deleteOne({ _id: isValidOTP._id })
 
-      return { message: 'success', status: HttpStatus.ACCEPTED }
+      return { message: 'Successfully log in', status: HttpStatus.ACCEPTED }
     }
     catch (err) {
+      return CustomError(err.message, err.status)
+    }
+  }
+
+  async getUserDetail(info: UserDto) {
+    try {
+      const { mobileNumber, dial_code } = info
+      const userData = await this.userModel.findOne({ mobileNumber, 'country.dial_code': dial_code })
+
+      // return back if user not exists
+      if (!userData)
+        throw ({ message: 'Something went wrong', status: HttpStatus.NOT_FOUND })
+
+      return { user: userData }
+    }
+    catch (err) {
+      console.log("err:", err)
       return CustomError(err.message, err.status)
     }
   }

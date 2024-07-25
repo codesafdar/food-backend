@@ -1,9 +1,10 @@
 import * as moment from 'moment';
+
 export const getExpiry = () => {
   const createdAt = new Date();
-  const expiresAt = moment(createdAt).add(5, 'minutes').toDate();
+  const expiresAt = moment(createdAt).add(50, 'seconds').toDate();
   return expiresAt;
-};
+}
 
 export function isTokenExpired(expiry: Date): boolean {
   const expirationDate = new Date(expiry);
