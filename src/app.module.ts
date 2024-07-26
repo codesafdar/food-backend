@@ -18,7 +18,7 @@ import { UserModule } from './client/user/user.module';
     CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', // Ensure this points to your .env file if not in the root directory
+      envFilePath: process.env.NODE_ENV=== 'production' ? '.env.prod' : '.env', // Ensure this points to your .env file if not in the root directory
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
