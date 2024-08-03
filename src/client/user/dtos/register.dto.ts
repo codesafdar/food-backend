@@ -1,5 +1,6 @@
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ICountry } from "./reqOtp.dto";
+import { Types } from 'mongoose';
 
 interface IGender {
   label: string
@@ -18,7 +19,6 @@ export class RegisterUserDto {
   @IsOptional()
   gender: IGender
 
-  // @IsDate()
   @IsOptional()
   dateOfBirth: string
 
@@ -28,4 +28,9 @@ export class RegisterUserDto {
 
   @IsNotEmpty()
   country: ICountry
+}
+
+export class FavoriteDto {
+  @IsNotEmpty()
+  productId: Types.ObjectId
 }

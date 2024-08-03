@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Types } from 'mongoose';
+import { FavoriteDto } from "./dtos/register.dto";
 
 @Schema({ _id: false })
 class Country {
@@ -32,13 +34,16 @@ export class User {
   gender: Gender
 
   @Prop()
-  date: Date
+  dateOfBirth: Date
 
   @Prop({ required: true })
   mobileNumber: string
 
   @Prop()
   country: Country
+
+  @Prop([{ type: Types.ObjectId, ref: 'Products' }])
+  favorites: Types.ObjectId[]
 }
 
 @Schema()
@@ -60,6 +65,7 @@ export class OTP {
 }
 
 const OTPSchema = SchemaFactory.createForClass(OTP)
+
 const UserSchema = SchemaFactory.createForClass(User)
 
 export { OTPSchema, UserSchema }

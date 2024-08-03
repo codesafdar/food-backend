@@ -32,7 +32,6 @@ export class ProductService {
   // get data 
   async getAll(): Promise<Product[] | HttpException> {
     try {
-
       const getData: Product[] = await this.productModel.find()
       if (!getData)
         throw ({ message: 'Data not found', status: HttpStatus.NOT_FOUND })
@@ -87,7 +86,6 @@ export class ProductService {
       let getData = []
       if (page_no) getData = await this.productModel.find({ title: { $regex: regex } }).skip(offset).limit(per_page)
       else getData = await this.productModel.find({ title: { $regex: regex } })
-      console.log("🚀 ~ ProductService ~ findByFilter ~ getData:", getData.length)
       return getData
     }
     catch (err) {

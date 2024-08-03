@@ -14,7 +14,6 @@ import { UserModule } from './client/user/user.module';
 @Module({
   imports: [
     AuthModule, CategoryModule, OptionsModule, ProductModule,
-    // MongooseModule.forRoot('mongodb+srv://SafdarDeveloper:kallas@cluster0.pltv1.mongodb.net/food-ordering?retryWrites=true&w=majority'),
     CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -32,6 +31,5 @@ import { UserModule } from './client/user/user.module';
     CartModule,
     UserModule,
   ],
-  providers: [],
 })
 export class AppModule {}

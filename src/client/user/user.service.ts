@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { RegisterUserDto } from './dtos/register.dto';
+import { FavoriteDto, RegisterUserDto } from './dtos/register.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, OTP } from './user.schema';
@@ -9,6 +9,7 @@ import { RequestOtpDto } from './dtos/reqOtp.dto';
 // import { sendMessage } from '@/src/libs/sendMessage';
 import { getExpiry, isTokenExpired } from '@/utils/dateTimeUtility';
 import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
+import { userInfo } from 'os';
 
 
 @Injectable()
@@ -80,7 +81,7 @@ export class UserService {
       // delete token after verification
       await this.otpModel.deleteOne({ _id: isValidOTP._id })
 
-      return { message: 'Successfully log in', status: HttpStatus.ACCEPTED }
+      return { message: 'Successfully logged in', status: HttpStatus.ACCEPTED }
     }
     catch (err) {
       return CustomError(err.message, err.status)
@@ -90,7 +91,11 @@ export class UserService {
   async getUserDetail(info: UserDto) {
     try {
       const { mobileNumber, dial_code } = info
-      const userData = await this.userModel.findOne({ mobileNumber, 'country.dial_code': dial_code })
+      const userData = await this.userModel.findOne({ mobileNumber, 'country.dial_code': dial_code }).populate({
+        path: 'favorites',
+        model: 'Products' // Ensure the correct model name
+      })
+        .exec();
 
       // return back if user not exists
       if (!userData)
@@ -101,6 +106,49 @@ export class UserService {
     catch (err) {
       console.log("err:", err)
       return CustomError(err.message, err.status)
+    }
+  }
+
+  // update user profile
+  async updateUserProfile(id: string, userData: RegisterUserDto) {
+    try {
+      const isUserExist = await this.userModel.findById(id)
+      if (!isUserExist) {
+        throw ({ message: 'User not found', status: HttpStatus.NOT_FOUND })
+      }
+      // update user profile
+      const response = await this.userModel.findByIdAndUpdate(id, userData, { new: true })
+      return { message: 'Updated successfully' }
+    }
+    catch (err) {
+
+    }
+  }
+
+  // add/remove favorite
+  async addRemoveFavorite(userId: string, data: FavoriteDto) {
+    try {
+      const { productId } = data
+      const user = await this.userModel.findById(userId)
+
+      const favoriteExists = await this.userModel.findOne({
+        "favorites": productId
+      })
+
+      if (favoriteExists) {
+        await this.userModel.updateOne(
+          { _id: userId },
+          { $pull: { favorites: productId } } // remove the product with the specified productId
+        )
+        return { message: 'Removed' }
+      } else {
+        user.favorites.push(productId)
+        await user.save()
+        return { message: 'Added' }
+      }
+    }
+    catch (err) {
+
     }
   }
 }

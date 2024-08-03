@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { RequestOtpDto } from './dtos/reqOtp.dto';
-import { RegisterUserDto } from './dtos/register.dto';
+import { FavoriteDto, RegisterUserDto } from './dtos/register.dto';
 import { UserService } from './user.service';
 import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
 
@@ -31,5 +31,15 @@ export class UserController {
   @Get('detail')
   async userDetail(@Query() info: UserDto) {
     return this.userService.getUserDetail(info)
+  }
+
+  @Put('profile/:id')
+  async updateProfile(@Param('id') id: string, @Body() updatedProfile: RegisterUserDto) {
+    return this.userService.updateUserProfile(id, updatedProfile)
+  }
+
+  @Post('favorite/:userId')
+  async handleFavorite(@Param('userId') userId: string, @Body() data: FavoriteDto ) {
+    return this.userService.addRemoveFavorite(userId, data)
   }
 }
