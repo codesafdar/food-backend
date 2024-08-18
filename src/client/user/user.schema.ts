@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from 'mongoose';
-import { FavoriteDto } from "./dtos/register.dto";
+import { ICityAreaAddress } from "./dtos/address.dto";
 
 @Schema({ _id: false })
 class Country {
@@ -12,6 +12,23 @@ class Country {
 
   @Prop()
   code: string
+}
+
+@Schema({_id: false})
+class CityAreaAddress {
+  @Prop()
+  latitude: string
+  @Prop()
+  longitude: string
+}
+
+@Schema()
+class Address {
+  @Prop()
+  address: string
+
+  @Prop()
+  cityAreaAddress: CityAreaAddress
 }
 
 @Schema({ _id: false })
@@ -44,6 +61,9 @@ export class User {
 
   @Prop([{ type: Types.ObjectId, ref: 'Products' }])
   favorites: Types.ObjectId[]
+
+  @Prop({ type: [Address], default: [] })
+  addresses: Address[]
 }
 
 @Schema()

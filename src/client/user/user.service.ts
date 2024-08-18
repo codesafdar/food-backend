@@ -1,15 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { FavoriteDto, RegisterUserDto } from './dtos/register.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, OTP } from './user.schema';
 import { CustomError } from '@/src/libs';
 import { RequestOtpDto } from './dtos/reqOtp.dto';
+// will uncomment below utils later
 // import { generateOTP } from '@/utils/codeGenerator';
 // import { sendMessage } from '@/src/libs/sendMessage';
 import { getExpiry, isTokenExpired } from '@/utils/dateTimeUtility';
 import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
-import { userInfo } from 'os';
+import { UserAddressDto } from './dtos/address.dto';
+import { CustomResponse } from '@/src/libs/common/customResponse';
 
 
 @Injectable()
@@ -93,7 +95,7 @@ export class UserService {
       const { mobileNumber, dial_code } = info
       const userData = await this.userModel.findOne({ mobileNumber, 'country.dial_code': dial_code }).populate({
         path: 'favorites',
-        model: 'Products' // Ensure the correct model name
+        model: 'Products',
       })
         .exec();
 
@@ -117,11 +119,11 @@ export class UserService {
         throw ({ message: 'User not found', status: HttpStatus.NOT_FOUND })
       }
       // update user profile
-      const response = await this.userModel.findByIdAndUpdate(id, userData, { new: true })
+      await this.userModel.findByIdAndUpdate(id, userData, { new: true })
       return { message: 'Updated successfully' }
     }
     catch (err) {
-
+      return CustomError(err.message, err.status)
     }
   }
 
@@ -148,7 +150,49 @@ export class UserService {
       }
     }
     catch (err) {
+      return CustomError(err.message, err.status)
+    }
+  }
 
+  // add user address
+  async addUserAddress(userId: string, address: UserAddressDto) {
+    try {
+      const user = await this.userModel.findById({ _id: userId })
+      if (!user)
+        throw new NotFoundException('User not found');
+
+      user.addresses.push(address)
+      await user.save()
+
+      return { message: 'Address successfully added' }
+    }
+    catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to delete user address');
+    }
+  }
+
+  // add user address
+  async deleteAddress(userId: string, addressId: string) {
+    try {
+      const user = await this.userModel.findById({ _id: userId })
+      if (!user)
+        throw new NotFoundException('User not found');
+
+      await this.userModel.updateOne(
+        { _id: userId },
+        { $pull: { addresses: { _id: addressId } } } // remove the address with the specified addressId
+      )
+
+      return { message: 'Address successfully deleted' }
+    }
+    catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to delete user address');
     }
   }
 }

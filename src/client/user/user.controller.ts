@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, Delete } from '@nestjs/common';
 import { RequestOtpDto } from './dtos/reqOtp.dto';
 import { FavoriteDto, RegisterUserDto } from './dtos/register.dto';
 import { UserService } from './user.service';
 import { UserDto, VerifyDto } from './dtos/verifyOTP.dto';
+import { UserAddressDto } from './dtos/address.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,7 +40,18 @@ export class UserController {
   }
 
   @Post('favorite/:userId')
-  async handleFavorite(@Param('userId') userId: string, @Body() data: FavoriteDto ) {
+  async handleFavorite(@Param('userId') userId: string, @Body() data: FavoriteDto) {
     return this.userService.addRemoveFavorite(userId, data)
   }
+
+  @Put('address/:userId')
+  async addAddress(@Param('userId') userId: string, @Body() data: UserAddressDto) {
+    return await this.userService.addUserAddress(userId, data)
+  }
+
+  @Delete('address/:userId')
+  async deleteAddress(@Param('userId') userId: string, @Query('addressId') addressId: string) {
+    return  await this.userService.deleteAddress(userId, addressId)
+  }
+
 }
