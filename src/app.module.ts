@@ -10,6 +10,7 @@ import { CreateAdminModule } from './admin/createAdmin/create-admin.module';
 import { ClientModule } from './client/addToCart/client.module';
 import { CartModule } from './client/cart/cart.module';
 import { UserModule } from './client/user/user.module';
+import { OrdersModule } from './client/orders/orders.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserModule } from './client/user/user.module';
     ClientModule,
     CartModule,
     UserModule,
+    OrdersModule,
   ],
 })
 export class AppModule {}
